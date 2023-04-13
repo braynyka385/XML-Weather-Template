@@ -14,7 +14,11 @@ namespace XMLWeather
         public CurrentScreen()
         {
             InitializeComponent();
+            double dateTime = DateTime.Now.TimeOfDay.TotalSeconds;
             DisplayCurrent();
+
+            
+
         }
 
         public void DisplayCurrent()

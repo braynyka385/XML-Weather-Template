@@ -21,6 +21,7 @@ namespace XMLWeather
         {
             date1.Text = Form1.days[1].date;
             min1.Text = Form1.days[1].tempLow;
+            
         }
 
         private void label3_Click(object sender, EventArgs e)

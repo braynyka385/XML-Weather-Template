@@ -15,6 +15,8 @@ namespace XMLWeather
     {
         // list to hold day objects
         public static List<Day> days = new List<Day>();
+        string city = "Stratford";
+        string country = "CA";
 
         public Form1()
         {
@@ -36,9 +38,44 @@ namespace XMLWeather
             {
                 //create a day object
                 Day d = new Day();
+                reader.ReadToFollowing("timezone");
+                string timeshiftS = reader.ReadString();
+                int timeshift = 0;
+                if(timeshiftS != "")
+                     timeshift = int.Parse(timeshiftS);
                 //fill day object with required data
                 reader.ReadToFollowing("time");
                 d.date = reader.GetAttribute("day");
+
+                reader.ReadToFollowing("sun");
+                d.sunrise = reader.GetAttribute("rise");
+                d.sunset = reader.GetAttribute("set");
+                if(d.sunrise != null)
+                {
+                    int indexOfRiseT = d.sunrise.IndexOf('T');
+                    d.sunrise = d.sunrise.Substring(indexOfRiseT + 1, d.sunrise.Length - indexOfRiseT - 1);
+
+                    int sunriseSeconds = (60 * 60 * int.Parse(d.sunrise.Substring(0, 2))) +
+                        (60 * int.Parse(d.sunrise.Substring(3, 2))) +
+                        (int.Parse(d.sunrise.Substring(6, 2)));
+
+                    int sunriseActual = sunriseSeconds + timeshift;
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(sunriseActual);
+                    d.sunrise = timeSpan.ToString();
+                }
+                if (d.sunset != null)
+                {
+                    int indexOfSetT = d.sunset.IndexOf('T');
+                    d.sunset = d.sunset.Substring(indexOfSetT + 1, d.sunset.Length - indexOfSetT - 1);
+
+                    int sunsetSeconds = (60 * 60 * int.Parse(d.sunset.Substring(0, 2))) +
+                        (60 * int.Parse(d.sunset.Substring(3, 2))) +
+                        (int.Parse(d.sunset.Substring(6, 2)));
+
+                    int sunsetActual = sunsetSeconds + timeshift;
+                    TimeSpan timeSpan = TimeSpan.FromSeconds(sunsetActual);
+                    d.sunset = timeSpan.ToString();
+                }
 
                 reader.ReadToFollowing("temperature");
                 d.tempLow = Math.Round(Convert.ToDouble(reader.GetAttribute("min"))).ToString();
