@@ -27,7 +27,7 @@ namespace XMLWeather
             speechClientBuilder.CredentialsPath = "";
             speechClient = speechClientBuilder.Build();
             RecognizeRequest request = new RecognizeRequest();
-            request.Recognizer = "projects/";
+            request.Recognizer = "projects/a";
             speechClient.Recognize(request);
             ExtractForecast();
             ExtractCurrent();
