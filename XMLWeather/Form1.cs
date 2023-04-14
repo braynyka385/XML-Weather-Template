@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Net;
+using Google.Cloud.Speech.V2;
 using System.Xml;
 
 namespace XMLWeather
@@ -15,13 +16,19 @@ namespace XMLWeather
     {
         // list to hold day objects
         public static List<Day> days = new List<Day>();
+        public static SpeechClient speechClient;
         string city = "Stratford";
         string country = "CA";
 
         public Form1()
         {
             InitializeComponent();
-
+            SpeechClientBuilder speechClientBuilder = new SpeechClientBuilder();
+            speechClientBuilder.CredentialsPath = "";
+            speechClient = speechClientBuilder.Build();
+            RecognizeRequest request = new RecognizeRequest();
+            request.Recognizer = "projects/";
+            speechClient.Recognize(request);
             ExtractForecast();
             ExtractCurrent();
             
@@ -60,6 +67,14 @@ namespace XMLWeather
                         (int.Parse(d.sunrise.Substring(6, 2)));
 
                     int sunriseActual = sunriseSeconds + timeshift;
+                    if(sunriseActual > 86400)
+                    {
+                        sunriseActual -= 86400;
+                    }
+                    if(sunriseActual < 0)
+                    {
+                        sunriseActual += 86400;
+                    }
                     TimeSpan timeSpan = TimeSpan.FromSeconds(sunriseActual);
                     d.sunrise = timeSpan.ToString();
                 }
@@ -73,6 +88,14 @@ namespace XMLWeather
                         (int.Parse(d.sunset.Substring(6, 2)));
 
                     int sunsetActual = sunsetSeconds + timeshift;
+                    if (sunsetActual > 86400)
+                    {
+                        sunsetActual -= 86400;
+                    }
+                    if (sunsetActual < 0)
+                    {
+                        sunsetActual += 86400;
+                    }
                     TimeSpan timeSpan = TimeSpan.FromSeconds(sunsetActual);
                     d.sunset = timeSpan.ToString();
                 }
@@ -85,6 +108,8 @@ namespace XMLWeather
                     days.Add(d);
                 //TODO: if day object not null add to the days list
             }
+
+           
         }
 
         private void ExtractCurrent()
